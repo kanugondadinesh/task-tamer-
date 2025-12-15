@@ -1,0 +1,207 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>TaskTamer — To-Do List</title>
+  <style>S
+    body { font-family: system-ui, sans-serif;}
+    .app { max-width:500px; margin:auto; background:#e0e07c; padding:20px; border-radius:12px;
+           box-shadow:0 8px 24px rgba(106, 227, 16, 0.08);}
+    h1 { margin-top:0; }
+    form { display:flex; gap:8px; }
+    input[type=text] { flex:1; padding:8px; border:1px solid #dde09d; border-radius:6px; }
+    button { padding:8px 14px; border:none; border-radius:6px; cursor:pointer; }
+    button.add { background:yellowgreen; color:rgb(255, 255, 255); }
+    ul { list-style:none; padding:0; margin-top:16px; }
+    li { display:flex; align-items:center; justify-content:space-between;
+         padding:8px; border-bottom:1px solid #a54abe; }
+    li.completed .task-text { text-decoration: line-through; color:#999; }
+    .actions button { margin-left:6px; font-size:0.8rem; }
+    #h11{
+      color: rgb(255, 0, 204);
+      text-align: center;
+      display: inline;
+      font-size: 100px;
+    }
+    .container {
+        position: relative; /* Establishes a positioning context for the image */
+        width: 100%;
+        height: 200px;
+    }
+
+    .top-right-image {
+        position: fixed;
+        bottom: 0px;
+        width: 450px;
+    }
+    footer{
+        text-align: center;
+    }
+    body {
+      background-image: url(image/p9.jpg);
+      background-repeat: repeat;
+      background-size: auto;
+    }
+    .logkey2{
+      display: inline;
+      text-decoration: none;
+      color: white;
+      background: rgb(30, 230, 253);
+      padding: 8px 15px;
+      margin-left: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+      
+      position: absolute;
+      top: 15px;
+      right: 10px;
+    }
+    .logkey1{
+      display: inline;
+      text-decoration: none;
+      color: white;
+      background: rgb(30, 230, 253);
+      padding: 8px 15px;
+      margin-left: 10px;
+      border-radius: 5px;
+      font-size: 14px;
+
+      position: absolute;
+      top: 15px;
+      right: 100px;
+    }
+  </style>
+</head>
+<nav >
+    <div >
+        <img src="image/mainlogo.svg" alt="mainlogo" height="100" id="mainlogo">
+        <h1 id="h11">TaskTamer</h1> 
+        <h6 class="logkey1"><a href="login.html">login</a></h6>
+        <h6 class="logkey2"><a href="register.html">register</a></h6>
+    </div>
+</nav>
+<body>
+    <main>
+        <div>
+            <div class="app">
+                <h1>TaskTamer</h1>
+                <form id="taskForm">
+                    <input id="taskInput" type="text" placeholder="Add a new task..." required />
+                    <button class="add" type="submit">Add</button>
+                </form>
+                <ul id="taskList"></ul>
+            </div>
+            <div class="container">
+            <img  src="image/logo.svg" alt="logo" height="500px" class="top-right-image">
+            </div>
+        </div>
+    </main>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    
+    <footer>
+        <div>
+            <a href="https://x.com/i/flow/signup" id="s11"><img src="image/logo-twitter.svg" alt="twitter" width="40"></a>
+            <a href="https://github.com/kanugondadinesh" id="s11"><img src="image/logo-github.svg" alt="github" width="40"></a>
+            <a href="https://www.instagram.com/dinesh_official_976?igsh=MXZsdG56azllcTFlaA==" id="s11"><img src="image/logo-instagram.svg" alt="instagram" width="40"></a>
+            <a href="https://www.facebook.com/" id="s11"><img src="image/logo-facebook.svg" alt="facebook" width="40"></a>
+            <a href="https://wa.me/qr/7ZR6AQ7TJQHLO1" id="s11"><img src="image/logo-whatsapp.svg" alt="Whatsapp" width="40"></a>
+        </div>
+    </footer>
+    </div>
+</body>
+
+
+  <script>
+    const taskForm = document.getElementById("taskForm");
+    const taskInput = document.getElementById("taskInput");
+    const taskList = document.getElementById("taskList");
+
+    let tasks = JSON.parse(localStorage.getItem("tasks")) || [];
+
+    function saveTasks() {
+      localStorage.setItem("tasks", JSON.stringify(tasks));
+    }
+
+    function renderTasks() {
+      taskList.innerHTML = "";
+      tasks.forEach((task) => {
+        const li = document.createElement("li");
+        li.className = task.completed ? "completed" : "";
+
+        const span = document.createElement("span");
+        span.textContent = task.text;
+        span.className = "task-text";
+        span.onclick = () => toggleTask(task.id);
+
+        const actions = document.createElement("div");
+        actions.className = "actions";
+
+        const editBtn = document.createElement("button");
+        editBtn.textContent = "Edit";
+        editBtn.onclick = () => editTask(task.id);
+
+        const delBtn = document.createElement("button");
+        delBtn.textContent = "Delete";
+        delBtn.onclick = () => deleteTask(task.id);
+
+        actions.appendChild(editBtn);
+        actions.appendChild(delBtn);
+
+        li.appendChild(span);
+        li.appendChild(actions);
+        taskList.appendChild(li);
+      });
+    }
+
+    function addTask(text) {
+      const newTask = { id: Date.now(), text, completed: false };
+      tasks.push(newTask);
+      saveTasks();
+      renderTasks();
+    }
+
+    function toggleTask(id) {
+      tasks = tasks.map((t) => (t.id === id ? { ...t, completed: !t.completed } : t));
+      saveTasks();
+      renderTasks();
+    }
+
+    function editTask(id) {
+      const task = tasks.find((t) => t.id === id);
+      const newText = prompt("Edit task:", task.text);
+      if (newText !== null && newText.trim() !== "") {
+        task.text = newText.trim();
+        saveTasks();
+        renderTasks();
+      }
+    }
+
+    function deleteTask(id) {
+      tasks = tasks.filter((t) => t.id !== id);
+      saveTasks();
+      renderTasks();
+    }
+
+    taskForm.addEventListener("submit", (e) => {
+      e.preventDefault();
+      const text = taskInput.value.trim();
+      if (text) {
+        addTask(text);
+        taskInput.value = "";
+      }
+    });
+
+    renderTasks();
+  </script>
+
+</html>
